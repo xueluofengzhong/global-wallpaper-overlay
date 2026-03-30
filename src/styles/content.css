@@ -1,0 +1,33 @@
+/* Global Wallpaper Overlay - Content Script Styles */
+
+/* Ensure overlay is properly positioned and non-interactive */
+#global-wallpaper-overlay-extension {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  pointer-events: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  box-sizing: border-box !important;
+}
+
+/* Additional CSS properties for overlay mode */
+#global-wallpaper-overlay-extension.mode-overlay {
+  z-index: 2147483647 !important;
+}
+
+/* CSS properties for background mode */
+#global-wallpaper-overlay-extension.mode-background {
+  z-index: -1 !important;
+}
+
+/* Ensure background image properties are applied correctly */
+#global-wallpaper-overlay-extension {
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-attachment: fixed !important;
+}

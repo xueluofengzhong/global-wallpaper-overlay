@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>裁剪图片 - Global Wallpaper Overlay</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+  <link rel="stylesheet" href="crop.css">
+</head>
+<body>
+  <div class="crop-container">
+    <header class="crop-header">
+      <h1>裁剪图片</h1>
+      <p class="subtitle">调整图片区域以适应您的需求</p>
+    </header>
+
+    <div class="crop-workspace">
+      <div class="image-container">
+        <img id="cropImage" src="" alt="待裁剪图片">
+      </div>
+
+      <div class="crop-controls">
+        <div class="control-group">
+          <label class="control-label">宽高比</label>
+          <div class="aspect-ratio-buttons">
+            <button class="aspect-btn active" data-ratio="free">自由</button>
+            <button class="aspect-btn" data-ratio="16:9">16:9</button>
+            <button class="aspect-btn" data-ratio="4:3">4:3</button>
+            <button class="aspect-btn" data-ratio="1:1">1:1</button>
+            <button class="aspect-btn" data-ratio="original">原始</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">旋转</label>
+          <div class="rotation-controls">
+            <button class="rotation-btn" id="rotateLeft" title="左旋转90°">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 4v6h6"></path>
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+              </svg>
+            </button>
+            <button class="rotation-btn" id="rotateRight" title="右旋转90°">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M23 4v6h-6"></path>
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">缩放</label>
+          <div class="zoom-controls">
+            <button class="zoom-btn" id="zoomIn" title="放大">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                <line x1="11" y1="8" x2="11" y2="14"></line>
+                <line x1="8" y1="11" x2="14" y2="11"></line>
+              </svg>
+            </button>
+            <button class="zoom-btn" id="zoomOut" title="缩小">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                <line x1="8" y1="11" x2="14" y2="11"></line>
+              </svg>
+            </button>
+            <button class="zoom-btn" id="zoomReset" title="重置缩放">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 4v6h6"></path>
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">预览</label>
+          <div class="preview-container">
+            <div class="preview-box" id="previewBox"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="crop-footer">
+      <button class="btn btn-secondary" id="cancelCrop">取消</button>
+      <button class="btn btn-primary" id="confirmCrop">确认裁剪</button>
+    </footer>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+  <script src="crop.js"></script>
+</body>
+</html>
