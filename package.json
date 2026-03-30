@@ -1,0 +1,26 @@
+{
+  "name": "global-wallpaper-overlay",
+  "version": "1.0.0",
+  "description": "A browser extension that allows users to upload and display custom wallpaper overlays on any webpage",
+  "main": "src/background/background.js",
+  "scripts": {
+    "test": "echo \"No tests specified\" && exit 0",
+    "lint": "eslint src/",
+    "package": "zip -r global-wallpaper-overlay.zip . -x '*.git*' -x 'node_modules/*'"
+  },
+  "keywords": [
+    "chrome-extension",
+    "wallpaper",
+    "overlay",
+    "browser-extension",
+    "manifest-v3"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^8.0.0"
+  },
+  "dependencies": {
+    "cropperjs": "^1.5.13"
+  }
+}

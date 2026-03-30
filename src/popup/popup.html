@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global Wallpaper Overlay</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <header class="popup-header">
+      <h1>全局壁纸遮罩</h1>
+      <p class="subtitle">Global Wallpaper Overlay</p>
+    </header>
+
+    <!-- Status Indicator -->
+    <div class="status-bar" id="statusBar">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusText">就绪</span>
+    </div>
+
+    <!-- Main Controls -->
+    <div class="control-section">
+      <!-- Enable/Disable Toggle -->
+      <div class="control-group">
+        <label class="toggle-switch">
+          <input type="checkbox" id="enableToggle" checked>
+          <span class="toggle-slider"></span>
+          <span class="toggle-label">启用遮罩</span>
+        </label>
+      </div>
+
+      <!-- Image Upload -->
+      <div class="control-group">
+        <label class="control-label">上传壁纸图片</label>
+        <div class="upload-area" id="uploadArea">
+          <div class="upload-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17,8 12,3 7,8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+          </div>
+          <p class="upload-text">点击或拖拽图片到此处</p>
+          <p class="upload-hint">支持 JPG, PNG, GIF, WebP 格式</p>
+          <input type="file" id="wallpaperUpload" accept="image/*" hidden>
+        </div>
+      </div>
+
+      <!-- Display Mode -->
+      <div class="control-group">
+        <label class="control-label">显示模式</label>
+        <div class="mode-selector">
+          <button class="mode-btn active" data-mode="overlay" id="modeOverlay">
+            <div class="mode-icon">🖼️</div>
+            <div class="mode-text">
+              <span class="mode-title">悬浮遮罩</span>
+              <span class="mode-desc">图片悬浮在网页上方</span>
+            </div>
+          </button>
+          <button class="mode-btn" data-mode="background" id="modeBackground">
+            <div class="mode-icon">🎨</div>
+            <div class="mode-text">
+              <span class="mode-title">网页背景</span>
+              <span class="mode-desc">图片作为网页背景</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Opacity Slider -->
+      <div class="control-group">
+        <label class="control-label">透明度: <span id="opacityValue">70%</span></label>
+        <div class="slider-container">
+          <input type="range" id="opacitySlider" min="0" max="100" value="70" class="opacity-slider">
+          <div class="slider-track">
+            <div class="slider-fill" id="sliderFill"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Image Preview -->
+      <div class="control-group" id="previewGroup" style="display: none;">
+        <label class="control-label">当前壁纸</label>
+        <div class="preview-container">
+          <img id="previewImage" class="preview-image" src="" alt="Wallpaper Preview">
+          <button class="preview-remove" id="removeWallpaper" title="移除壁纸">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="popup-footer">
+      <button class="btn btn-secondary" id="openCropEditor">裁剪图片</button>
+      <button class="btn btn-primary" id="applySettings">应用设置</button>
+    </footer>
+  </div>
+
+  <!-- Crop Modal -->
+  <div class="modal" id="cropModal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>裁剪图片</h3>
+        <button class="modal-close" id="closeCropModal">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="crop-container">
+          <img id="cropImage" src="" alt="Image to crop">
+        </div>
+        <div class="crop-controls">
+          <button class="btn btn-secondary" id="cropCancel">取消</button>
+          <button class="btn btn-primary" id="cropConfirm">确认裁剪</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
