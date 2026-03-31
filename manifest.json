@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Global Wallpaper Overlay",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A browser extension that allows users to upload and display custom wallpaper overlays on any webpage",
   "permissions": [
     "storage",
@@ -26,8 +26,8 @@
     {
       "matches": ["<all_urls>"],
       "js": ["src/content/content.js"],
-      "css": ["src/styles/content.css"],
-      "run_at": "document_start"
+      "run_at": "document_start",
+      "all_frames": true
     }
   ],
   "icons": {

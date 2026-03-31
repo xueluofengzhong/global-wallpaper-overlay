@@ -44,7 +44,8 @@ class WallpaperOverlayPopup {
       cropImage: document.getElementById('cropImage'),
       closeCropModal: document.getElementById('closeCropModal'),
       cropCancel: document.getElementById('cropCancel'),
-      cropConfirm: document.getElementById('cropConfirm')
+      cropConfirm: document.getElementById('cropConfirm'),
+      refreshAllTabs: document.getElementById('refreshAllTabs')
     };
   }
 
@@ -94,13 +95,19 @@ class WallpaperOverlayPopup {
       this.setMode('background');
     });
 
-    // Opacity slider
+    // Opacity slider - use debounced save for performance
+    let opacityTimeout;
     this.elements.opacitySlider.addEventListener('input', (e) => {
       const value = parseInt(e.target.value);
       this.currentSettings.opacity = value / 100;
       this.elements.opacityValue.textContent = `${value}%`;
       this.elements.sliderFill.style.width = `${value}%`;
-      this.saveAndApply();
+
+      // Debounce the save to avoid too many storage writes
+      clearTimeout(opacityTimeout);
+      opacityTimeout = setTimeout(() => {
+        this.saveAndApply();
+      }, 100); // 100ms debounce
     });
 
     // Remove wallpaper
@@ -134,6 +141,11 @@ class WallpaperOverlayPopup {
 
     this.elements.cropConfirm.addEventListener('click', () => {
       this.applyCrop();
+    });
+
+    // Refresh all tabs button
+    this.elements.refreshAllTabs.addEventListener('click', () => {
+      this.refreshAllTabs();
     });
 
     // Close modal on backdrop click
@@ -273,25 +285,93 @@ class WallpaperOverlayPopup {
     this.showStatus('壁纸已移除', 'info');
   }
 
+  async refreshAllTabs() {
+    try {
+      this.showStatus('正在刷新所有标签页...', 'info');
+
+      // Query all tabs and send refresh message
+      const tabs = await chrome.tabs.query({});
+      let successCount = 0;
+      let skipCount = 0;
+      let failCount = 0;
+
+      for (const tab of tabs) {
+        // Skip chrome:// and chrome-extension:// URLs
+        if (tab.url && (tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://') || tab.url.startsWith('edge://') || tab.url.startsWith('about:'))) {
+          skipCount++;
+          continue;
+        }
+
+        try {
+          await chrome.tabs.sendMessage(tab.id, {
+            action: 'refreshWallpaper'
+          });
+          successCount++;
+        } catch (error) {
+          // Tab might not have content script loaded yet
+          failCount++;
+        }
+      }
+
+      const message = `已刷新 ${successCount} 个标签页` +
+        (skipCount > 0 ? `, 跳过 ${skipCount} 个系统页面` : '') +
+        (failCount > 0 ? `, ${failCount} 个未加载` : '');
+
+      this.showStatus(message, 'success');
+    } catch (error) {
+      console.error('Failed to refresh tabs:', error);
+      this.showStatus('刷新失败', 'error');
+    }
+  }
+
   async saveAndApply() {
     try {
-      // Save to storage
+      // Save to storage FIRST - this is the most important step
       await chrome.storage.local.set(this.currentSettings);
+      console.log('Popup: Settings saved to storage, wallpaperData length:', this.currentSettings.wallpaperData ? this.currentSettings.wallpaperData.length : 0);
 
-      // Send message to content script
+      // Storage listener in content script should handle this, but let's also try direct messaging
+
+      // Method 1: Send directly to active tab's content script
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-      if (tab) {
-        chrome.tabs.sendMessage(tab.id, {
-          action: 'updateWallpaper',
-          settings: this.currentSettings
-        }).catch(() => {
-          // Content script might not be loaded
+      let directMessageSuccess = false;
+
+      if (tab && tab.id) {
+        try {
+          await chrome.tabs.sendMessage(tab.id, {
+            action: 'updateWallpaper',
+            settings: this.currentSettings
+          });
+          console.log('Popup: Direct message to content script succeeded');
+          directMessageSuccess = true;
+        } catch (err) {
+          console.warn('Popup: Direct message failed:', err.message, '- will rely on storage listener');
+        }
+      }
+
+      // Method 2: Also notify background to broadcast
+      try {
+        const response = await chrome.runtime.sendMessage({
+          action: 'broadcastToAllTabs',
+          payload: {
+            action: 'updateWallpaper',
+            settings: this.currentSettings
+          }
         });
+        console.log('Popup: Background broadcast result:', response);
+      } catch (err) {
+        console.warn('Popup: Background broadcast failed:', err.message);
+      }
+
+      // Show appropriate status
+      if (!directMessageSuccess) {
+        this.showStatus('壁纸已保存，正在同步到页面...', 'info');
       }
 
       this.updateStatus();
     } catch (error) {
-      console.error('Failed to save settings:', error);
+      console.error('Popup: Failed to save settings:', error);
+      this.showStatus('保存设置失败: ' + error.message, 'error');
     }
   }
 
